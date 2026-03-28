@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTQ.AI - ذكاء اصطناعي متقدم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <canvas id="particleCanvas" aria-hidden="true"></canvas>
+    <div class="bg-glow bg-glow-1" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow-2" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow-3" aria-hidden="true"></div>
+
+    <!-- شريط التنقل -->
+    <nav class="navbar" id="navbar" role="navigation" aria-label="التنقل الرئيسي">
+        <div class="nav-logo">
+            <div class="nav-logo-icon"><i class="fa-solid fa-bolt"></i></div>
+            RTQ.AI
+        </div>
+        <div class="nav-actions" id="navActions"></div>
+    </nav>
+
+    <!-- الإشعارات -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <!-- صفحة الهبوط -->
+    <section class="page-section landing active" id="pageLanding">
+        <div class="landing-badge">
+            <i class="fa-solid fa-circle" style="font-size:0.6rem"></i>
+            مدعوم بمعالج Groq LPU فائق السرعة
+        </div>
+        <h1>المستقبل في<br><span class="gradient-text">محادثة ذكية</span></h1>
+        <p class="landing-desc">تجربة ذكاء اصطناعي بلا حدود. أجوبة فورية بموازات عالية، محادثات طبيعية، وقوة معالجة استثنائية تدعم اللغة العربية بشكل كامل.</p>
+        <div class="landing-actions">
+            <button class="btn-lg btn-accent" onclick="navigateTo('auth')">ابدأ مجاناً</button>
+            <button class="btn-lg btn-outline" onclick="document.getElementById('featuresGrid').scrollIntoView({behavior:'smooth'})">تعرف على المزيد</button>
+        </div>
+        <div class="model-showcase">
+            <span class="model-tag">MODEL</span>
+            <span>llama-3.3-70b-versatile</span>
+            <span class="speed-tag"><i class="fa-solid fa-bolt"></i> 500+ token/s</span>
+        </div>
+        <div class="features" id="featuresGrid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-rocket"></i></div>
+                <h3>سرعة خارقة</h3>
+                <p>معالج Groq LPU يولّد أكثر من 500 توكن في الثانية. ردود فورية بدون انتظار.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
+                <h3>ذكاء عميق</h3>
+                <p>نموذج Llama 3.3 بـ 70 مليار معامل يفهم السياق المعقد ويقدم إجابات دقيقة.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-floppy-disk"></i></div>
+                <h3>حفظ تلقائي</h3>
+                <p>كل محادثاتك محفوظة تلقائياً مع إمكانية التصدير والاستيراد في أي وقت.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- صفحة التسجيل / الدخول -->
+    <section class="page-section auth-page" id="pageAuth">
+        <button class="back-link" onclick="navigateTo('landing')">
+            <i class="fa-solid fa-arrow-right"></i> الرجوع للرئيسية
+        </button>
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="register" onclick="switchAuthTab('register')">تسجيل حساب</button>
+                <button class="auth-tab" data-tab="login" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+            </div>
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <h2>إنشاء حساب جديد</h2>
+                <p class="auth-sub">أدخل بياناتك لبدء استخدام RTQ.AI</p>
+                <div class="form-group">
+                    <label for="regName">الاسم الكامل</label>
+                    <div class="form-input-wrap">
+                        <input type="text" id="regName" class="form-input" placeholder="مثال: أحمد محمد" required>
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="form-error" id="regNameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">البريد الإلكتروني</label>
+                    <div class="form-input-wrap">
+                        <input type="email" id="regEmail" class="form-input" placeholder="example@email.com" dir="ltr" style="text-align:right" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <div class="form-error" id="regEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="regPass">كلمة المرور</label>
+                    <div class="form-input-wrap">
+                        <input type="password" id="regPass" class="form-input" placeholder="8 أحرف على الأقل" required minlength="8">
+                        <i class="fa-solid fa-lock"></i>
+                        <button type="button" class="toggle-pass" onclick="togglePassword('regPass', this)"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                    <div class="form-error" id="regPassError"></div>
+                </div>
+                <button type="submit" class="btn-full" id="regSubmitBtn">إنشاء الحساب</button>
+            </form>
+            <form id="loginForm" style="display:none" onsubmit="handleLogin(event)">
+                <h2>تسجيل الدخول</h2>
+                <p class="auth-sub">أدخل بياناتك للوصول إلى حسابك</p>
+                <div class="form-group">
+                    <label for="loginEmail">البريد الإلكتروني</label>
+                    <div class="form-input-wrap">
+                        <input type="email" id="loginEmail" class="form-input" placeholder="example@email.com" dir="ltr" style="text-align:right" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <div class="form-error" id="loginEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPass">كلمة المرور</label>
+                    <div class="form-input-wrap">
+                        <input type="password" id="loginPass" class="form-input" placeholder="أدخل كلمة المرور" required>
+                        <i class="fa-solid fa-lock"></i>
+                        <button type="button" class="toggle-pass" onclick="togglePassword('loginPass', this)"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                    <div class="form-error" id="loginPassError"></div>
+                </div>
+                <button type="submit" class="btn-full" id="loginSubmitBtn">تسجيل الدخول</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- صفحة التحقق -->
+    <section class="page-section verify-page" id="pageVerify">
+        <div class="verify-card">
+            <div class="verify-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+            <h2>تحقق من بريدك الإلكتروني</h2>
+            <p class="verify-sub">أرسلنا رمز تحقق مكون من 6 أرقام إلى<br><strong id="verifyEmailDisplay"></strong></p>
+            <div class="code-inputs" id="codeInputs">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" aria-label="رقم 1">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" aria-label="رقم 2">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" aria-label="رقم 3">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" aria-label="رقم 4">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" aria-label="رقم 5">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" aria-label="رقم 6">
+            </div>
+            <button class="btn-full" id="verifyBtn" onclick="handleVerifyCode()">تحقق من الكود</button>
+            <div class="resend-timer" id="resendArea">
+                <span id="timerText">إعادة الإرسال بعد </span>
+                <button id="resendBtn" disabled onclick="resendCode()">إعادة إرسال الكود</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- صفحة المحادثة -->
+    <section class="page-section chat-page" id="pageChat">
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        <aside class="chat-sidebar" id="chatSidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" onclick="createNewChat()">
+                    <i class="fa-solid fa-plus"></i> محادثة جديدة
+                </button>
+            </div>
+            <div class="chat-list" id="chatList"></div>
+            <!-- أزرار حفظ البيانات -->
+            <div class="sidebar-footer">
+                <div class="storage-info" id="storageInfo"></div>
+                <div class="storage-actions">
+                    <button class="storage-btn" onclick="exportChats()" title="تصدير المحادثات">
+                        <i class="fa-solid fa-download"></i> تصدير
+                    </button>
+                    <button class="storage-btn" onclick="document.getElementById('importFile').click()" title="استيراد محادثات">
+                        <i class="fa-solid fa-upload"></i> استيراد
+                    </button>
+                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importChats(event)">
+                </div>
+            </div>
+        </aside>
+        <div class="chat-main">
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+                <div class="chat-input-wrap">
+                    <textarea class="chat-input" id="chatInput" placeholder="اكتب رسالتك هنا..." rows="1" onkeydown="handleInputKey(event)" oninput="autoResize(this)"></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()" aria-label="إرسال">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+                <p class="chat-input-hint">RTQ.AI باستخدام Llama 3.3 70B عبر Groq — المحادثات محفوظة تلقائياً</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ترتيب تحميل الملفات مهم -->
+    <script src="js/particles.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html>
